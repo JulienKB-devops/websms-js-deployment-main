@@ -45,7 +45,7 @@ jobs:
   rsync-deploy:
     runs-on: 
       - self-hosted
-      - env-test-1
+      - web-sms-1
     needs: check-ssh
     steps:
       - name: Rsync files to remote server
