@@ -69,7 +69,7 @@ jobs:
             -i ~/.ssh/id_ed25519 \
             ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }} \
             "
-              cat .env.websms-app .env.websms-db .env.websms-migration .env.websms-minio > .env.all && \
+              cat  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-app  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-db  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-migration  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-minio >  ${{ secrets.DEPLOY_PATH_W }}/.env.all && \
               docker compose -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml --env-file .env.all up -d
             "
 
