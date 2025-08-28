@@ -70,7 +70,7 @@ jobs:
             ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }} \
             "
               cat  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-app  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-db  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-migration  ${{ secrets.DEPLOY_PATH_W }}/.env.websms-minio >  ${{ secrets.DEPLOY_PATH_W }}/.env.all && \
-              docker compose -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml --env-file .env.all up -d
+              docker compose --env-file .env.all -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml up -d
             "
 
   docker-compose-verify:
@@ -85,4 +85,4 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{ secrets.DEPLOY_PORT_W }} \
             -i ~/.ssh/id_ed25519 \
             ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }} \
-            "docker compose -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml --env-file .env.all ps"
+            "docker compose --env-file .env.all -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml ps"
