@@ -55,3 +55,34 @@ jobs:
             -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.DEPLOY_PORT_W }} -i ~/.ssh/id_ed25519" \
             ./ \
             ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }}:${{ secrets.DEPLOY_PATH_W }}
+            
+  docker-compose-deploy:
+    runs-on: 
+      - self-hosted
+      - web-sms-2
+    needs: rsync-deploy
+    steps:
+      - name: Run Docker Compose on remote server
+        run: |
+          echo "🐳 Starting Docker Compose on remote server..."
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.DEPLOY_PORT_W }} \
+            -i ~/.ssh/id_ed25519 \
+            ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }} \
+            "
+              cat .env.websms-app .env.websms-db .env.websms-migration .env.websms-minio > .env.all && \
+              docker compose -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml --env-file .env.all up -d
+            "
+
+  docker-compose-verify:
+    runs-on:
+      - self-hosted
+      - web-sms-1
+    needs: docker-compose-deploy
+    steps:
+      - name: Verify Docker Compose containers
+        run: |
+          echo "🔍 Vérification des containers Docker..."
+          ssh -o StrictHostKeyChecking=no -p ${{ secrets.DEPLOY_PORT_W }} \
+            -i ~/.ssh/id_ed25519 \
+            ${{ vars.DEPLOY_USER_W }}@${{ secrets.DEPLOY_HOST_W }} \
+            "docker compose -f ${{ secrets.DEPLOY_PATH_W }}/compose.yml --env-file .env.all ps"
